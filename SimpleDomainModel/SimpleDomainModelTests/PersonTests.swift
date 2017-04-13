@@ -68,6 +68,9 @@ class FamilyTests : XCTestCase {
     
     let familyIncome = family.householdIncome()
     XCTAssert(familyIncome == 12000)
+    
+    XCTAssert(family.description == "Ted Neward, Charlotte Neward, Mike Neward, Matt Neward")
+
   }
   
 }

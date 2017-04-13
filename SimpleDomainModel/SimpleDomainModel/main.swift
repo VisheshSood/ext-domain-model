@@ -20,84 +20,127 @@ open class TestMe {
   }
 }
 
+
+////////////////////////////////////
+// Mathematics Protocol!
+//
+protocol Mathematics {
+  static func +(l: Self, r: Self) -> Self
+  static func -(l: Self, r: Self) -> Self
+}
+
+extension Double {
+  var USD : Money {
+    return Money(amount: Int(self), currency: "USD")
+  }
+  
+  var GBP : Money {
+    return Money(amount: Int(self), currency: "GBP")
+  }
+  
+  var CAN : Money {
+    return Money(amount: Int(self), currency: "CAN")
+  }
+  
+  var EUR : Money {
+    return Money(amount: Int(self), currency: "EUR")
+  }
+}
+
+
+
 ////////////////////////////////////
 // Money
 //
-public struct Money {
+public struct Money: CustomStringConvertible, Mathematics {
   public var amount : Int
   public var currency : String
   
   public func convert(_ to: String) -> Money {
     var otherAmount = 0
     if to == "USD" {
-        if currency == "GBP" {
-            otherAmount = amount * 2
-        } else if currency == "EUR" {
-            otherAmount = amount * 2/3
-        } else if currency == "CAN" {
-            otherAmount = amount * 4/5
-        } else {
-            otherAmount = amount
-        }
+      if currency == "GBP" {
+        otherAmount = amount * 2
+      } else if currency == "EUR" {
+        otherAmount = amount * 2/3
+      } else if currency == "CAN" {
+        otherAmount = amount * 4/5
+      } else {
+        otherAmount = amount
+      }
     }
     if to == "GBP" {
-        if currency == "USD" {
-            otherAmount = amount / 2
-        } else if currency == "EUR" {
-            otherAmount = amount / 3
-        } else if currency == "CAN" {
-            otherAmount = amount * 2/5
-        } else {
-            otherAmount = amount
-        }
+      if currency == "USD" {
+        otherAmount = amount / 2
+      } else if currency == "EUR" {
+        otherAmount = amount / 3
+      } else if currency == "CAN" {
+        otherAmount = amount * 2/5
+      } else {
+        otherAmount = amount
+      }
     }
     if to == "EUR" {
-        if currency == "GBP" {
-            otherAmount = amount * 3
-        } else if currency == "USD" {
-            otherAmount = amount * 3/2
-        } else if currency == "CAN" {
-            otherAmount = amount * 5/6
-        } else {
-            otherAmount = amount
-        }
+      if currency == "GBP" {
+        otherAmount = amount * 3
+      } else if currency == "USD" {
+        otherAmount = amount * 3/2
+      } else if currency == "CAN" {
+        otherAmount = amount * 5/6
+      } else {
+        otherAmount = amount
+      }
     }
     if to == "CAN" {
-        if currency == "GBP" {
-            otherAmount = amount * 5/2
-        } else if currency == "EUR" {
-            otherAmount = amount * 6/5
-        } else if currency == "USD" {
-            otherAmount = amount * 5/4
-        } else {
-            otherAmount = amount
-        }
+      if currency == "GBP" {
+        otherAmount = amount * 5/2
+      } else if currency == "EUR" {
+        otherAmount = amount * 6/5
+      } else if currency == "USD" {
+        otherAmount = amount * 5/4
+      } else {
+        otherAmount = amount
+      }
     }
     return Money(amount: otherAmount, currency: to)
   }
   
-    public func add(_ to: Money) -> Money {
-        var temp = Money(amount: amount, currency: currency)
-        temp = temp.convert(to.currency)
-        let other = to.amount + temp.amount
-        return Money(amount: other, currency: to.currency)
+  public func add(_ to: Money) -> Money {
+    if self.currency != to.currency {
+      let new = self.convert(to.currency)
+      return Money(amount: (new.amount + to.amount), currency: to.currency)
     }
-    
-    public func subtract(_ from: Money) -> Money {
-        var temp = Money(amount: amount, currency: currency)
-        temp = temp.convert(from.currency)
-        let other = from.amount - temp.amount
-        return Money(amount: other, currency: from.currency)
+    return Money(amount: (self.amount + to.amount), currency: to.currency)
+  }
+  
+  public func subtract(_ from: Money) -> Money {
+    if self.currency != from.currency {
+      let new = self.convert(from.currency)
+      return Money(amount: (new.amount - from.amount), currency: from.currency)
     }
+    return Money(amount: (self.amount - from.amount), currency: from.currency)
+  }
+  
+  public var description : String {
+    return "\(self.currency)\(self.amount)"
+  }
+  
+  static func +(l: Money, r: Money) -> Money {
+    return r.add(l)
+  }
+  
+  static func -(l: Money, r: Money) -> Money {
+    return r.subtract(l)
+  }
 }
 
 ////////////////////////////////////
 // Job
 //
-open class Job {
+open class Job: CustomStringConvertible {
   fileprivate var title : String
   fileprivate var type : JobType
-
+  
   public enum JobType {
     case Hourly(Double)
     case Salary(Int)
@@ -111,38 +154,42 @@ open class Job {
   open func calculateIncome(_ hours: Int) -> Int {
     switch self.type {
     case .Hourly(let hourly):
-        return Int(hourly * Double(hours))
+      return Int(hourly * Double(hours))
     case .Salary(let salary):
-        return salary
+      return salary
     }
   }
   
   open func raise(_ amt : Double) {
     switch self.type {
     case .Hourly(let hourly):
-        self.type = JobType.Hourly(hourly + amt)
+      self.type = JobType.Hourly(hourly + amt)
     case .Salary(let salary):
-        self.type = JobType.Salary(salary + Int(amt))
+      self.type = JobType.Salary(salary + Int(amt))
     }
   }
-    
+  
+  public var description : String {
+    return "\(self.title)"
+  }
+  
 }
 
 ////////////////////////////////////
 // Person
 //
-open class Person {
+open class Person: CustomStringConvertible {
   open var firstName : String = ""
   open var lastName : String = ""
   open var age : Int = 0
-
+  
   fileprivate var _job : Job? = nil
   open var job : Job? {
     get {return self._job}
     set(value) {
-        if self.age > 15 {
-            self._job = value
-        }
+      if self.age > 15 {
+        self._job = value
+      }
     }
   }
   
@@ -150,9 +197,9 @@ open class Person {
   open var spouse : Person? {
     get {return self._spouse}
     set(value) {
-        if self.age >= 18 {
-            self._spouse = value
-        }
+      if self.age >= 18 {
+        self._spouse = value
+      }
     }
   }
   
@@ -164,7 +211,11 @@ open class Person {
   
   open func toString() -> String {
     return("[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(String(describing: job)) spouse:\(String(describing: spouse))]")
-
+    
+  }
+  
+  public var description : String {
+    return "\(firstName) \(lastName)"
   }
 }
 
@@ -176,30 +227,30 @@ open class Family {
   
   public init(spouse1: Person, spouse2: Person) {
     if(spouse1.age >= 18 && spouse2.age >= 18) {
-        if spouse1._spouse == nil && spouse2._spouse == nil {
-            spouse1._spouse = spouse2
-            members.append(spouse1)
-            spouse2._spouse = spouse1
-            members.append(spouse2)
-        }
+      if spouse1._spouse == nil && spouse2._spouse == nil {
+        spouse1._spouse = spouse2
+        members.append(spouse1)
+        spouse2._spouse = spouse1
+        members.append(spouse2)
+      }
     }
   }
   
   open func haveChild(_ child: Person) -> Bool {
     var childExists = false
     for person: Person in members {
-        if(person.age >= 21) {
-            var member = true
-            for person: Person in members {
-                if(person.firstName == child.firstName) {
-                    member = false
-                }
-            }
-            if(member) {
-                members.append(child)
-            }
-            childExists = true
+      if(person.age >= 21) {
+        var member = true
+        for person: Person in members {
+          if(person.firstName == child.firstName) {
+            member = false
+          }
         }
+        if(member) {
+          members.append(child)
+        }
+        childExists = true
+      }
     }
     return childExists
   }
@@ -207,11 +258,20 @@ open class Family {
   open func householdIncome() -> Int {
     var income = 0
     for person in members {
-        if(person.job != nil) {
-            income += person.job!.calculateIncome(2000)
-        }
+      if(person.job != nil) {
+        income += person.job!.calculateIncome(2000)
+      }
     }
     return income
+  }
+  
+  
+  public var description : String {
+    var family = ""
+    for familyMember in self.members {
+      family += familyMember.description + ", "
+    }
+    return family.substring(to: family.index(family.endIndex, offsetBy: -2))
   }
 }
 

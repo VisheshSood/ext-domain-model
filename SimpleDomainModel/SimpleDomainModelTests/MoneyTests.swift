@@ -92,5 +92,31 @@ class MoneyTests: XCTestCase {
     XCTAssert(total.amount == 10)
     XCTAssert(total.currency == "GBP")
   }
+  
+  func testMathematics() {
+    let tenGBP = fiveGBP + tenUSD
+    
+    XCTAssert(tenGBP.amount == 10)
+    XCTAssert(tenGBP.currency == "GBP")
+    
+    let twentyUSD = tenUSD + tenUSD
+    
+    XCTAssert(twentyUSD.amount == 20)
+    XCTAssert(twentyUSD.currency == "USD")
+  }
+  
+  func testDouble() {
+    XCTAssert(15.0.CAN.description == "CAN15")
+    XCTAssert(5.0.USD.description == "USD5")
+  }
+  
+  func testDescription() {
+    XCTAssert(tenUSD.description == "USD10")
+    XCTAssert(fiveGBP.description == "GBP5")
+    XCTAssert(twelveUSD.description == "USD12")
+    XCTAssert(fifteenCAN.description == "CAN15")
+    XCTAssert(fifteenEUR.description == "EUR15")
+  }
+
 }
 
